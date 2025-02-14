@@ -1,0 +1,5 @@
+local generate = 100000000 -- generate 100 million
+for i = 1, math.round(math.max(generate, 200000)/200000) do
+    local MarketplaceService = game:GetService("MarketplaceService")
+    MarketplaceService:SignalPromptProductPurchaseFinished(game.Players.LocalPlayer.UserId, 2664144169, true)
+end
