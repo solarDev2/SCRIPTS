@@ -1,0 +1,98 @@
+
+local Mercury = loadstring(game:HttpGet("https://raw.githubusercontent.com/deeeity/mercury-lib/master/src.lua"))()
+
+-- Create GUI
+local GUI = Mercury:Create{
+    Name = "Vehicle Hub",
+    Size = UDim2.fromOffset(600, 400),
+    Theme = Mercury.Themes.Rust,
+    Link = ""
+}
+
+local Players = game:GetService("Players")
+local SelectedPlayer = Players.LocalPlayer
+
+local function SpawnCar(vehicleName)
+    if not SelectedPlayer then return end
+    local character = SelectedPlayer.Character or SelectedPlayer.CharacterAdded:Wait()
+    local rootPart = character:WaitForChild("HumanoidRootPart")
+    
+    local spawnPosition = rootPart.CFrame * CFrame.new(0, 5, 0) 
+    
+    local args = {
+        [1] = vehicleName,
+        [2] = spawnPosition,
+        [3] = SelectedPlayer
+    }
+    
+    game:GetService("ReplicatedStorage").Vehicles.VehicleFunction:InvokeServer("SpawnVehicle", args)
+end
+local PlayerTab = GUI:Tab{
+    Name = "Player",
+    Icon = "rbxassetid://8569322835"
+}
+
+local VehSpawner = GUI:Tab{
+    Name = "Vehicle Spawner",
+    Icon = "rbxassetid://8569322835"
+}
+
+local amountOfMoney = ""
+local RebirthTable = {
+	["Type"] = "InitiateRebirth"
+}
+
+local rebirthAmounts = 4
+PlayerTab:TextBox({
+    Name = "Amount Of Money",
+    Callback = function(v)
+    amountOfMoney = v
+    game:GetService("ReplicatedStorage").UpdateCash:FireServer("change",v) 
+end,
+})
+
+ PlayerTab:Button({
+            Name = "Add Money",
+            Description = nil,
+            Callback = function()
+                game:GetService("ReplicatedStorage").UpdateCash:FireServer("change",amountOfMoney) 
+            end
+        })
+PlayerTab:TextBox({
+    Name = "Amount Of Rebirths",
+    Callback = function(v)
+    rebirthAmounts = v
+end,
+})
+ PlayerTab:Button({
+            Name = "Confrim Rebirths",
+            Description = "NOTE: <font color='rgb(255,0,0)'>You will die the amount of rebirths</font>",
+            Callback = function()
+               task.spawn(function()
+                for i = 0, rebirthAmounts do
+                game:GetService("ReplicatedStorage").RebirthEvent:FireServer(RebirthTable)
+                end
+               end)
+            end
+})
+
+
+local vehicles = {}
+for _, vehicle in pairs(game:GetService("ReplicatedStorage").Vehicles.Objects:GetChildren()) do
+    if vehicle:IsA("Model") then
+        table.insert(vehicles, vehicle.Name)
+    end
+end
+
+table.sort(vehicles) -- Sort vehicles alphabetically
+
+-- Add sorted vehicle buttons
+for _, vehicleName in ipairs(vehicles) do
+    VehSpawner:Button{
+        Name = vehicleName,
+        Description = "Spawn " .. vehicleName,
+        Callback = function()
+            SpawnCar(vehicleName)
+        end
+    }
+end
