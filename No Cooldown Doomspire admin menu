@@ -1,0 +1,16 @@
+local p = game.Players.LocalPlayer
+
+local function keepAdminMenuEnabled()
+    local menu = p.PlayerGui:WaitForChild("AdminMenu")
+    menu.Enabled = true
+    menu:GetPropertyChangedSignal("Enabled"):Connect(function()
+        menu.Enabled = true
+    end)
+end
+
+p.CharacterAdded:Connect(function()
+    wait(0.1)
+    keepAdminMenuEnabled()
+end)
+
+keepAdminMenuEnabled()
