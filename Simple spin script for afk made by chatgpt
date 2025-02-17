@@ -1,0 +1,94 @@
+--[[
+	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
+]]
+-- Simple Spin Script with GUI
+local player = game.Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- Create a ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "SpinGui"
+screenGui.Parent = playerGui
+
+-- Create a Toggle Button (to show/hide the menu)
+local toggleButton = Instance.new("TextButton")
+toggleButton.Name = "ToggleButton"
+toggleButton.Size = UDim2.new(0, 100, 0, 50)
+toggleButton.Position = UDim2.new(0, 10, 0, 10)
+toggleButton.Text = "Menu"
+toggleButton.Parent = screenGui
+
+-- Create a Frame to hold spin controls
+local menuFrame = Instance.new("Frame")
+menuFrame.Name = "MenuFrame"
+menuFrame.Size = UDim2.new(0, 150, 0, 150)
+menuFrame.Position = UDim2.new(0, 10, 0, 70)
+menuFrame.BackgroundTransparency = 0.3
+menuFrame.Visible = false
+menuFrame.Parent = screenGui
+
+-- Create a Button to toggle spinning on/off
+local onOffButton = Instance.new("TextButton")
+onOffButton.Name = "OnOffButton"
+onOffButton.Size = UDim2.new(0, 130, 0, 50)
+onOffButton.Position = UDim2.new(0, 10, 0, 10)
+onOffButton.Text = "Turn On"
+onOffButton.Parent = menuFrame
+
+-- Create a Button to increase spin speed
+local speedUpButton = Instance.new("TextButton")
+speedUpButton.Name = "SpeedUpButton"
+speedUpButton.Size = UDim2.new(0, 60, 0, 30)
+speedUpButton.Position = UDim2.new(0, 10, 0, 70)
+speedUpButton.Text = "Speed+"
+speedUpButton.Parent = menuFrame
+
+-- Create a Button to decrease spin speed
+local speedDownButton = Instance.new("TextButton")
+speedDownButton.Name = "SpeedDownButton"
+speedDownButton.Size = UDim2.new(0, 60, 0, 30)
+speedDownButton.Position = UDim2.new(0, 80, 0, 70)
+speedDownButton.Text = "Speed-"
+speedDownButton.Parent = menuFrame
+
+-- Variables to control spinning
+local spinEnabled = false
+local spinSpeed = 5 -- degrees per frame
+
+-- Toggle the menu visibility
+toggleButton.MouseButton1Click:Connect(function()
+    menuFrame.Visible = not menuFrame.Visible
+end)
+
+-- Toggle spinning on/off
+onOffButton.MouseButton1Click:Connect(function()
+    spinEnabled = not spinEnabled
+    onOffButton.Text = spinEnabled and "Turn Off" or "Turn On"
+end)
+
+-- Increase spin speed
+speedUpButton.MouseButton1Click:Connect(function()
+    spinSpeed = spinSpeed + 2
+end)
+
+-- Decrease spin speed (minimum speed of 2)
+speedDownButton.MouseButton1Click:Connect(function()
+    if spinSpeed > 2 then
+        spinSpeed = spinSpeed - 2
+    end
+end)
+
+-- Helper function to get the character's HumanoidRootPart
+local function getHRP()
+    local character = player.Character or player.CharacterAdded:Wait()
+    return character:WaitForChild("HumanoidRootPart")
+end
+
+-- Spin the character on every frame if enabled
+local RunService = game:GetService("RunService")
+RunService.RenderStepped:Connect(function()
+    if spinEnabled then
+        local hrp = getHRP()
+        hrp.CFrame = hrp.CFrame * CFrame.Angles(0, math.rad(spinSpeed), 0)
+    end
+end)
