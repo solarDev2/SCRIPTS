@@ -1,0 +1,4 @@
+for _,v in pairs(workspace.ToFind:GetChildren()) do
+    v:PivotTo(game.Players.LocalPlayer.Character:GetPivot())
+    task.wait(0.1)
+end
